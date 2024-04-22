@@ -13,16 +13,13 @@ let page = 1;
 async function searchImages() {
     keyword = searchBox.value;
 
-    const url = `https://api.pexels.com/v1/search?query=birds&per_page=1`;
+    const url = `https://api.pexels.com/v1/search?query=${keyword}&per_page=12&page=${page}`;
 
     const fetchOptions = {
         headers: {
-            'Authorization': 'Bearer q0J3Sy2Ug3qRWYLARdPrBaycA9UdKnGw1GJLjkRVRW8trxDWcy5a3KwW'
+            'Authorization': 'q0J3Sy2Ug3qRWYLARdPrBaycA9UdKnGw1GJLjkRVRW8trxDWcy5a3KwW'
         }
     }
-
-
-
 
     const response = await fetch(url, fetchOptions);
     const data = await response.json();
@@ -30,19 +27,22 @@ async function searchImages() {
     console.log(data);
 
 
+    if (page === 1) {
+        searchResult.innerHTML = "";
+    }
+    const photos = data.photos;
 
-    const results = data.results;
-
-    results.map((result) => {
+    photos.map((result) => {
         const image = document.createElement("img");
-        image.src = result.urls.small;
+        image.src = result.src.original;
         const imageLink = document.createElement("a");
-        imageLink.href = result.links.html;
+        imageLink.href = result.url;
         imageLink.target = "_blank";
 
         imageLink.appendChild(image);
         searchResult.appendChild(imageLink);
     })
+    showMoreBtn.style.display = "block";
 
 }
 
@@ -50,5 +50,10 @@ async function searchImages() {
 searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
     page = 1;
+    searchImages();
+})
+
+showMoreBtn.addEventListener("click", () => {
+    page++;
     searchImages();
 })
